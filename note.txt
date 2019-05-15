@@ -1,0 +1,1 @@
+python -m hexdump trojan-killer_2021.exe > hexdump.txt
