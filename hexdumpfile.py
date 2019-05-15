@@ -26,14 +26,19 @@ def is_character_printable(s):
 def validate_byte_as_printable(byte):
   ## Check if byte is a printable ascii character. If not replace with a '.' character ##
   if is_character_printable(byte):
+    if byte.encode('hex') == '3c':
+      print (byte)
+      return '<span><</span>'
+    elif byte.encode('hex') == '3e':
+      return '<span>></span>'
     return byte
   else:
     return '.'
   
 ## main ##
 
-def read_hex_dump(file_path, offset=0):
-  result = '<table class="table table-sm table-bordered">'
+def read_hex_dump(file_path, offset=0, size=-1):
+  result = ''
   memory_address = 0
   ascii_string = ""
   count = 0
@@ -41,14 +46,14 @@ def read_hex_dump(file_path, offset=0):
   for byte in read_bytes(file_path, offset):
     ascii_string = ascii_string + validate_byte_as_printable(byte)
     if memory_address%16 == 0:
-      count = count + 1
-      if count == 150:
+      if size != -1 and count == size:
         break
-      result = result + ('<tr><td>' + format(memory_address, '06X') + '</td><td>' + byte.encode('hex') + ' ')
+      result = result + (format(memory_address + offset, '06X') + ':        ' + byte.encode('hex') + ' ')
     elif memory_address%16 == 15:
-      result = result + (byte.encode('hex') + '</td><td>' + ascii_string + '</td></tr>')
+      result = result + (byte.encode('hex') + '    |' + ascii_string + '|<br>')
       ascii_string = ""
     else:
       result = result + (byte.encode('hex') + ' ')
     memory_address = memory_address + 1
-  return result + '</table>'
+    count = count + 1
+  return result

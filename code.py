@@ -5,10 +5,9 @@ import hexdumpfile
 
 data = {'dump_file': ''}
 
-data['dump_file'] = hexdumpfile.read_hex_dump(os.sys.argv[1])
+data['dump_file'] = hexdumpfile.read_hex_dump(os.sys.argv[1], 0, 100*16)
 
-with open('data.json', 'w') as outfile:
-    json.dump(data, outfile, indent=2)
+
 
 pe = pefile.PE(os.sys.argv[1])
 
@@ -18,6 +17,8 @@ pe = pefile.PE(os.sys.argv[1])
 #         print i.name
 
 dump_file = pe.dump_dict()
+
+
 
 #print(json.dumps(dump_file))
 
@@ -42,20 +43,98 @@ def write_exported_symbols(dump_file_params):
         print(export_symbol)
 
 def write_sections(pefile_params):
+    sections_json = dump_file["PE Sections"]
+    count = 0
+    sections = {}
+    names = []
     for section in pefile_params.sections:
-        print(section.Name, hex(section.PointerToRawData), hex(section.VirtualAddress), hex(section.Misc_VirtualSize), section.SizeOfRawData)
-        if (len(section.get_data()) != 0):
-            value = ""
-            name = "section-" + section.Name + ".txt"
+        names.append(section.Name.rstrip(' \t\r\n\0'))
+        #print(section.Name, hex(section.PointerToRawData), hex(section.VirtualAddress), hex(section.Misc_VirtualSize), section.SizeOfRawData)
+        #print(hexdumpfile.read_hex_dump(os.sys.argv[1], section.PointerToRawData, section.SizeOfRawData))
+        name_value = section.Name.encode('hex')
+        name_value = " ".join(name_value[i:i+2] for i in range(0, len(name_value), 2))
+        value = {
+            0: [
+                hex(sections_json[count]['Name']['FileOffset']),
+                name_value,
+                'Name',
+                section.Name.rstrip(' \t\r\n\0')
+            ],
+            1: [
+                hex(sections_json[count]['Misc_VirtualSize']['FileOffset']),
+                hex(sections_json[count]['Misc_VirtualSize']['Value']),
+                'Virtual Size',
+                ''               
+            ],
+            2: [
+                hex(sections_json[count]['VirtualAddress']['FileOffset']),
+                hex(sections_json[count]['VirtualAddress']['Value']),
+                'RVA',
+                ''                
+            ],
+            3: [
+                hex(sections_json[count]['SizeOfRawData']['FileOffset']),
+                hex(sections_json[count]['SizeOfRawData']['Value']),
+                'Size of Raw Data',
+                ''                
+            ],
+            4: [
+                hex(sections_json[count]['PointerToRawData']['FileOffset']),
+                hex(sections_json[count]['PointerToRawData']['Value']),
+                'Pointer to Raw Data',
+                ''                
+            ],
+            5: [
+                hex(sections_json[count]['PointerToRelocations']['FileOffset']),
+                hex(sections_json[count]['PointerToRelocations']['Value']),
+                'Pointer to Relocations',
+                ''                
+            ],
+            6: [
+                hex(sections_json[count]['PointerToLinenumbers']['FileOffset']),
+                hex(sections_json[count]['PointerToLinenumbers']['Value']),
+                'Pointer to Line Numbers',
+                ''                
+            ],
+            7: [
+                hex(sections_json[count]['NumberOfRelocations']['FileOffset']),
+                hex(sections_json[count]['NumberOfRelocations']['Value']),
+                'Number of Relocations',
+                ''                
+            ],
+            8: [
+                hex(sections_json[count]['NumberOfLinenumbers']['FileOffset']),
+                hex(sections_json[count]['NumberOfLinenumbers']['Value']),
+                'Number of Line Numbers',
+                ''                
+            ],
+            9: [
+                hex(sections_json[count]['Characteristics']['FileOffset']),
+                hex(sections_json[count]['Characteristics']['Value']),
+                'Characteristics',
+                ''                
+            ]
+        }
+        flags = sections_json[count]['Flags']
+        
+        temp_count = 10
+        for flag in flags:
+            value[str(temp_count)] = [
+                '',
+                '',
+                '',
+                flag
+            ]
+            temp_count += 1
+        value['data'] = hexdumpfile.read_hex_dump(os.sys.argv[1], section.PointerToRawData, section.SizeOfRawData)
 
-            for character in section.get_data():
-                if (ord(character) < 32 or ord(character) > 126):
-                    value = value + '.'
-                else:
-                    value = value + character
+        sections[section.Name.rstrip(' \t\r\0')] = value
 
-            # with open(os.getcwd() + "/section-%s.txt" % section.Name, "w") as outfile:
-            #     outfile.write(value)
+        count = count + 1
+
+    sections["size"] = count
+    sections["names"] = names
+    return sections
 
 #write_imported_symbols(dump_file)
 #write_exported_symbols(dump_file)
@@ -64,9 +143,10 @@ def write_sections(pefile_params):
 #print pe.FILE_HEADER
 #print pe.DOS_HEADER
 #pe.DOS_HEADER.values()
-#write_sections(pe)
+data["sections"] = write_sections(pe)
+with open('data.json', 'w') as outfile:
+    json.dump(data, outfile, indent=2)
 #print pe.NT_HEADERS.get_file_offset()
-#print pe.FILE_HEADER.dump_dict()
 #print pe.NT_HEADERS.__getattribute__('Signature').__getitem__("FileOffset")
 
-print(json.dumps(pe.DOS_HEADER.dump_dict(), indent=4))
+#print(json.dumps(pe.DOS_HEADER.dump_dict(), indent=4))

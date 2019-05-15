@@ -15,17 +15,19 @@
     <h2 id="mz-header">MZ-Header</h2>
     <div id="mz-header-group" class="container"></div>
 
-    <h2 id="hexdump">Hexdump</h2>
-    <div id="hexdump-group" class="container">
-    </div>
+    <h2 id="image-sections-title" onclick="toggleImageSections()">IMAGE Sections</h2>
+    <div id="image-sections">
+        <div id="image-sections-list"></div>
+        <div id="image-sections-group" class="container"></div>
+        <pre id="image-sections-data" class="container" style="font-family: monospace;"></pre>
+    </div>    
 
-    <style>
-        tr {
-            margin: 0px 5px;
-        }
-    </style>
+    <h2 id="hexdump">Hexdump</h2>
+    <div id="hexdump-group" class="container" style="font-family:  monospace;"></div>
+
     
     <script>
+        let data = '';
         $(document).ready(() => {
             $.ajax({
                 type: "GET",
@@ -34,14 +36,20 @@
                 success: function(result) {
                     console.log('Loading file data done!')
                     dataJSON = result
+                    data = dataJSON
                     //getMZHeader(file);
                     getHexdump(dataJSON);
+                    generateSectionTable(dataJSON);
                 },
                 error: function(err) {
                     console.log(err);
                 }
             });
         });
+
+        const toggleImageSections = () => {
+            $('#image-sections').toggle();
+        }
 
         $('#mz-header').click(() => {
             $('#mz-header-group').toggle();
@@ -50,6 +58,48 @@
         $('#hexdump').click(() => {
             $('#hexdump-group').toggle();
         })
+
+        const showTableImageSection = (name) => {
+            table = `<table class="table table-bordered table-sm">
+                        <thead>
+                            <tr>
+                                <th scope="col">pFile</th>
+                                <th scope="col">Data</th>
+                                <th scope="col">Description</th>
+                                <th scope="col">Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>`;
+            for (index in data.sections[name]) {
+                table += `  <tr>
+                                <td scope="row">${data.sections[name][index][0]}</td>
+                                <td>${data.sections[name][index][1]}</td>
+                                <td>${data.sections[name][index][2]}</td>
+                                <td>${data.sections[name][index][3]}</td>
+                            </tr>`;
+            }
+
+            table += `  </tbody>
+                    </table>`
+
+            $('#image-sections-group').html(table);
+            $('#image-sections-data').html(`${data.sections[name].data}`)
+        }
+
+        const generateSectionTable = (dataJSON) => {
+            sections = dataJSON.sections;
+            names = sections.names;
+            
+            ul_li = '<ul>';
+            
+            for (name of names) {
+                ul_li += `<li onclick="showTableImageSection('${name}')">IMAGE_SECTION_HEADER ${name}</li>` 
+            }
+
+            ul_li += '</ul';
+
+            $('#image-sections-list').html(ul_li);
+        }
 
         const getHexdump = (dataJSON) => {
             $('#hexdump-group').html(dataJSON.dump_file);
