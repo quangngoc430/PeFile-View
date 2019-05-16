@@ -27,7 +27,6 @@ def validate_byte_as_printable(byte):
   ## Check if byte is a printable ascii character. If not replace with a '.' character ##
   if is_character_printable(byte):
     if byte.encode('hex') == '3c':
-      print (byte)
       return '<span><</span>'
     elif byte.encode('hex') == '3e':
       return '<span>></span>'

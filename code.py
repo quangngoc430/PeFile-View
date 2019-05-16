@@ -7,8 +7,6 @@ data = {'dump_file': ''}
 
 data['dump_file'] = hexdumpfile.read_hex_dump(os.sys.argv[1], 0, 100*16)
 
-
-
 pe = pefile.PE(os.sys.argv[1])
 
 # for item in pe.DIRECTORY_ENTRY_IMPORT:
@@ -17,8 +15,6 @@ pe = pefile.PE(os.sys.argv[1])
 #         print i.name
 
 dump_file = pe.dump_dict()
-
-
 
 #print(json.dumps(dump_file))
 
@@ -49,8 +45,6 @@ def write_sections(pefile_params):
     names = []
     for section in pefile_params.sections:
         names.append(section.Name.rstrip(' \t\r\n\0'))
-        #print(section.Name, hex(section.PointerToRawData), hex(section.VirtualAddress), hex(section.Misc_VirtualSize), section.SizeOfRawData)
-        #print(hexdumpfile.read_hex_dump(os.sys.argv[1], section.PointerToRawData, section.SizeOfRawData))
         name_value = section.Name.encode('hex')
         name_value = " ".join(name_value[i:i+2] for i in range(0, len(name_value), 2))
         value = {
@@ -150,3 +144,6 @@ with open('data.json', 'w') as outfile:
 #print pe.NT_HEADERS.__getattribute__('Signature').__getitem__("FileOffset")
 
 #print(json.dumps(pe.DOS_HEADER.dump_dict(), indent=4))
+
+print pe.NT_HEADERS.get_file_offset()
+print pe.NT_HEADERS.dump()
