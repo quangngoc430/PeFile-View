@@ -8,38 +8,56 @@
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <title>Document</title>
 </head>
 <body>
 
-    <h2 id="mz-header">MZ-Header</h2>
-    <div id="mz-header-group" class="container"></div>
+    <style>
+        p {
+            line-height: 5px;
+            cursor: pointer;
+        }
+        .level-1 {
+            margin-left: 20px;
+        }
+        .level-2 {
+            margin-left: 40px;
+        }
+    </style>
 
-    <h2 id="image-sections-title" onclick="toggleImageSections()">IMAGE Sections</h2>
-    <div id="image-sections">
-        <div id="image-sections-list"></div>
-        <div id="image-sections-group" class="container"></div>
-        <pre id="image-sections-data" class="container" style="font-family: monospace;"></pre>
-    </div>    
-
-    <h2 id="hexdump">Hexdump</h2>
-    <div id="hexdump-group" class="container" style="font-family:  monospace;"></div>
-
+    <div class="row">
+        <div id="menu-container" class="col-md-3 mt-2">
+        </div>
+        <div id="data-container" class="col-md-9">
+        </div>
+    </div>
     
     <script>
         let data = '';
+        let menu = `
+                <p id="program" onclick="generateHexData('program')">Program</p>
+                <p id="mz-header" class="level-1" >MZ-Header</p>
+                <p id="image-dos-header" class="level-1">IMAGE_DOS_HEADER</p>
+                <p id="ms-dos-stub-program" class="level-1">MS-DOS Stub Program</p>   
+                <p id="image-nt-headers" class="level-1">IMAGE-NT-HEADER</p>
+                <p id="signature" class="level-2">Signature</p>
+                <p id="image-file-header" class="level-2">IMAGE_FILE_HEADER</p>
+                <p id="image-optional-header" class="level-2">IMAGE_OPTIONAL_HEADER</p>`;
+
         $(document).ready(() => {
+            $('#menu-container').hide();
+            $('#menu-container').html(menu);
+
             $.ajax({
                 type: "GET",
                 dataType: 'json',
                 url: "http://localhost:3000/data",
                 success: function(result) {
                     console.log('Loading file data done!')
-                    dataJSON = result
-                    data = dataJSON
-                    //getMZHeader(file);
-                    getHexdump(dataJSON);
-                    generateSectionTable(dataJSON);
+                    data = result
+
+                    generateMenu(data);
                 },
                 error: function(err) {
                     console.log(err);
@@ -47,19 +65,39 @@
             });
         });
 
-        const toggleImageSections = () => {
-            $('#image-sections').toggle();
+        
+        const generateMenu = (dataJSON) => {
+
+            sections = dataJSON.sections;
+            names = sections.names;
+            
+            image_sections_html = '';
+            
+            for (name of names) {
+                image_sections_html += `<p class="level-1" onClick="generateTableData('image-section-${name}')">IMAGE_SECTION_HEADER ${name}</p>` 
+            }
+
+            sections_html = ''
+
+            for (name of names) {
+                sections_html += `<p class="level-1" onClick="generateHexData('section-${name}')">SECTION ${name}</p>` 
+            }
+
+            menu += image_sections_html;
+            menu += sections_html;
+
+            $('#menu-container').html(menu);
+            $('#menu-container').show()
         }
 
-        $('#mz-header').click(() => {
-            $('#mz-header-group').toggle();
-        })
+        const generateTableData = (name) => {
+            dataTemp = null;
 
-        $('#hexdump').click(() => {
-            $('#hexdump-group').toggle();
-        })
+            if (name.startsWith('image-section')) {
+                name = name.replace('image-section-', '');
+                dataTemp = data.sections[name];
+            }
 
-        const showTableImageSection = (name) => {
             table = `<table class="table table-bordered table-sm">
                         <thead>
                             <tr>
@@ -70,73 +108,42 @@
                             </tr>
                         </thead>
                         <tbody>`;
-            for (index in data.sections[name]) {
-                table += `  <tr>
-                                <td scope="row">${data.sections[name][index][0]}</td>
-                                <td>${data.sections[name][index][1]}</td>
-                                <td>${data.sections[name][index][2]}</td>
-                                <td>${data.sections[name][index][3]}</td>
-                            </tr>`;
+            for (index in dataTemp) {
+                if (isNaN(index) === false) {
+                    table += `  <tr>
+                                    <td scope="row">${dataTemp[index][0]}</td>
+                                    <td>${dataTemp[index][1]}</td>
+                                    <td>${dataTemp[index][2]}</td>
+                                    <td>${dataTemp[index][3]}</td>
+                                </tr>`;
+                }
             }
 
             table += `  </tbody>
                     </table>`
 
-            $('#image-sections-group').html(table);
-            $('#image-sections-data').html(`${data.sections[name].data}`)
+            $('#data-container').html(table);
         }
 
-        const generateSectionTable = (dataJSON) => {
-            sections = dataJSON.sections;
-            names = sections.names;
+        const generateHexData = (name) => {
+            let data_temp = null;
+            let result_html = `<div style="font-family: monospace;">`;
             
-            ul_li = '<ul>';
-            
-            for (name of names) {
-                ul_li += `<li onclick="showTableImageSection('${name}')">IMAGE_SECTION_HEADER ${name}</li>` 
+            if (name === 'program') {
+                data_temp = data.dump_file;
             }
 
-            ul_li += '</ul';
+            if (name.startsWith('section-')) {
+                name = name.replace('section-', '');
+                data_temp = data.sections[name].data
+            }
 
-            $('#image-sections-list').html(ul_li);
-        }
+            result_html += data_temp;
 
-        const getHexdump = (dataJSON) => {
-            $('#hexdump-group').html(dataJSON.dump_file);
-        }
+            result_html = result_html + `</div>`;
 
-        const getMZHeader = (file) => {
-            let DOS_HEADER = file["DOS_HEADER"];
-                    
-            delete DOS_HEADER['Structure'];
-
-            let arrayResult = Object.keys(DOS_HEADER).map(function(key) {
-                return `{"${key}" : ${JSON.stringify(DOS_HEADER[key])}}`;
-            });
-
-            arrayResult = arrayResult.map(function(a) {
-                return JSON.parse(a)
-            });
-
-            arrayResult.sort((a, b) => {
-                return Number(a[Object.keys(a)[0]].FileOffset) - Number(b[Object.keys(b)[0]].FileOffset);    
-            });
-            
-            $('#mz-header-group').html(`
-            <table class="table table-bordered">
-                <tbody>
-                    ${arrayResult.reduce((base, current) => {
-                        return base + `
-                        <tr>
-                            <td>${Object.keys(current)[0]}</td>
-                            <td>${current[Object.keys(current)[0]].Value}</td>
-                        </tr>
-                        `;
-                    }, "")}
-                </tbody>
-            </table>`);
+            $('#data-container').html(result_html);
         }
     </script>
-
 </body>
 </html>
