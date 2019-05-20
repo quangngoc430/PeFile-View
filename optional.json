@@ -1,0 +1,153 @@
+{
+  "DllCharacteristics": {
+    "FileOffset": 318, 
+    "Value": 34048, 
+    "Offset": 70
+  }, 
+  "BaseOfCode": {
+    "FileOffset": 268, 
+    "Value": 4096, 
+    "Offset": 20
+  }, 
+  "MajorLinkerVersion": {
+    "FileOffset": 250, 
+    "Value": 9, 
+    "Offset": 2
+  }, 
+  "MinorOperatingSystemVersion": {
+    "FileOffset": 290, 
+    "Value": 0, 
+    "Offset": 42
+  }, 
+  "MinorLinkerVersion": {
+    "FileOffset": 251, 
+    "Value": 0, 
+    "Offset": 3
+  }, 
+  "MajorSubsystemVersion": {
+    "FileOffset": 296, 
+    "Value": 5, 
+    "Offset": 48
+  }, 
+  "MajorOperatingSystemVersion": {
+    "FileOffset": 288, 
+    "Value": 5, 
+    "Offset": 40
+  }, 
+  "SizeOfStackCommit": {
+    "FileOffset": 324, 
+    "Value": 4096, 
+    "Offset": 76
+  }, 
+  "SizeOfUninitializedData": {
+    "FileOffset": 260, 
+    "Value": 0, 
+    "Offset": 12
+  }, 
+  "NumberOfRvaAndSizes": {
+    "FileOffset": 340, 
+    "Value": 16, 
+    "Offset": 92
+  }, 
+  "SizeOfHeapReserve": {
+    "FileOffset": 328, 
+    "Value": 1048576, 
+    "Offset": 80
+  }, 
+  "LoaderFlags": {
+    "FileOffset": 336, 
+    "Value": 0, 
+    "Offset": 88
+  }, 
+  "SizeOfHeapCommit": {
+    "FileOffset": 332, 
+    "Value": 4096, 
+    "Offset": 84
+  }, 
+  "SizeOfStackReserve": {
+    "FileOffset": 320, 
+    "Value": 1048576, 
+    "Offset": 72
+  }, 
+  "Structure": "IMAGE_OPTIONAL_HEADER", 
+  "SizeOfHeaders": {
+    "FileOffset": 308, 
+    "Value": 1024, 
+    "Offset": 60
+  }, 
+  "Subsystem": {
+    "FileOffset": 316, 
+    "Value": 2, 
+    "Offset": 68
+  }, 
+  "Magic": {
+    "FileOffset": 248, 
+    "Value": 267, 
+    "Offset": 0
+  }, 
+  "MinorImageVersion": {
+    "FileOffset": 294, 
+    "Value": 0, 
+    "Offset": 46
+  }, 
+  "MajorImageVersion": {
+    "FileOffset": 292, 
+    "Value": 0, 
+    "Offset": 44
+  }, 
+  "FileAlignment": {
+    "FileOffset": 284, 
+    "Value": 512, 
+    "Offset": 36
+  }, 
+  "BaseOfData": {
+    "FileOffset": 272, 
+    "Value": 77824, 
+    "Offset": 24
+  }, 
+  "AddressOfEntryPoint": {
+    "FileOffset": 264, 
+    "Value": 46017, 
+    "Offset": 16
+  }, 
+  "SectionAlignment": {
+    "FileOffset": 280, 
+    "Value": 4096, 
+    "Offset": 32
+  }, 
+  "SizeOfCode": {
+    "FileOffset": 252, 
+    "Value": 72704, 
+    "Offset": 4
+  }, 
+  "ImageBase": {
+    "FileOffset": 276, 
+    "Value": 4194304, 
+    "Offset": 28
+  }, 
+  "SizeOfInitializedData": {
+    "FileOffset": 256, 
+    "Value": 25600, 
+    "Offset": 8
+  }, 
+  "SizeOfImage": {
+    "FileOffset": 304, 
+    "Value": 200704, 
+    "Offset": 56
+  }, 
+  "MinorSubsystemVersion": {
+    "FileOffset": 298, 
+    "Value": 0, 
+    "Offset": 50
+  }, 
+  "CheckSum": {
+    "FileOffset": 312, 
+    "Value": 0, 
+    "Offset": 64
+  }, 
+  "Reserved1": {
+    "FileOffset": 300, 
+    "Value": 0, 
+    "Offset": 52
+  }
+}

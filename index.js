@@ -13,7 +13,7 @@ app.engine('html', engine.mustache);
 app.set('view engine', 'html');
 
 app.get('/data', (req, res) => {
-    exec('python code.py PracticalMalwareAnalysis-Labs.exe', (err, stdout, stderr) => {
+    exec(`python code.py ${process.argv[2]}`, (err, stprdout, stderr) => {
         if (err) {
             console.log('error');
             return;

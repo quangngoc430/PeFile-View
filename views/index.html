@@ -37,14 +37,13 @@
     <script>
         let data = '';
         let menu = `
-                <p id="program" onclick="generateHexData('program')">Program</p>
-                <p id="mz-header" class="level-1" >MZ-Header</p>
-                <p id="image-dos-header" class="level-1">IMAGE_DOS_HEADER</p>
-                <p id="ms-dos-stub-program" class="level-1">MS-DOS Stub Program</p>   
+                <p id="program" onClick="generateHexData('program')">Program</p>
+                <p id="image-dos-header" class="level-1" onClick="generateTableData('dos_header')">IMAGE_DOS_HEADER</p>
+                <p id="ms-dos-stub-program" class="level-1" onClick="generateHexData('dos_header')">MS-DOS Stub Program</p>   
                 <p id="image-nt-headers" class="level-1">IMAGE-NT-HEADER</p>
-                <p id="signature" class="level-2">Signature</p>
-                <p id="image-file-header" class="level-2">IMAGE_FILE_HEADER</p>
-                <p id="image-optional-header" class="level-2">IMAGE_OPTIONAL_HEADER</p>`;
+                <p id="signature" class="level-2" onClick="generateTableData('signature')">Signature</p>
+                <p id="image-file-header" class="level-2" onClick="generateTableData('file_header')">IMAGE_FILE_HEADER</p>
+                <p id="image-optional-header" class="level-2" onClick="generateTableData('optional_header')">IMAGE_OPTIONAL_HEADER</p>`;
 
         $(document).ready(() => {
             $('#menu-container').hide();
@@ -99,6 +98,22 @@
                 dataTemp = data.sections[name];
             }
 
+            if (name == 'optional_header') {
+                dataTemp = data.optional_header;
+            }
+
+            if (name == 'signature') {
+                dataTemp = data.signature;
+            }
+
+            if (name == 'file_header') {
+                dataTemp = data.file_header
+            }
+
+            if (name == 'dos_header') {
+                dataTemp = data.dos_header
+            }
+
             table = `<table class="table table-bordered table-sm">
                         <thead>
                             <tr>
@@ -137,6 +152,10 @@
             if (name.startsWith('section-')) {
                 name = name.replace('section-', '');
                 data_temp = data.sections[name].data
+            }
+
+            if (name == 'dos_header') {
+                data_temp = data.dos_header.data
             }
 
             result_html += data_temp;
