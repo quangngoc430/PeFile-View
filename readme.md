@@ -3,7 +3,7 @@ Author: Bui Lam Quang Ngoc
 
 ## Requirements
 
-Install python 2
+Install python 2  
 Install node version > 10
 
 ## How to run ?
