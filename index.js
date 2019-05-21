@@ -3,6 +3,7 @@ const { exec } = require('child_process');
 var engine = require('consolidate');
 const path = require('path');
 const fs = require('fs');
+const opn = require('opn');
 
 const port = 3000;
 
@@ -31,4 +32,5 @@ app.get('/', (req, res) => {
 
 app.listen(port, function() {
     console.log(`Server listening on port ${port}`);
+    opn('http://localhost:3000');
 })
